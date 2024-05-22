@@ -1,0 +1,16 @@
+services:
+  nginx:
+    build: ./src/nginx/.
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./html:/var/www/html
+
+  wp:
+    depends_on:
+      - nginx
+    build: ./src/wp/.
+    container_name: wp
+    volumes:
+      - ./html:/var/www/html

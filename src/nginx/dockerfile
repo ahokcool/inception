@@ -1,0 +1,11 @@
+FROM debian:bullseye
+
+RUN echo updating and installing nginx
+RUN apt update -y
+RUN apt upgrade -y
+RUN apt install -y nginx
+RUN echo DONE> updating and installing nginx
+
+COPY default /etc/nginx/sites-available/default
+
+CMD ["nginx", "-g", "daemon off;"]
