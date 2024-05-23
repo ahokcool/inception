@@ -1,0 +1,16 @@
+FROM debian:bullseye
+
+# Install
+#	-	PHP
+#	-	the php package for MariaDB (mysqli - the i stands for improved)
+#	-	curl to download wordpress
+RUN apt update && apt install -y \
+					php-fpm \
+					php-mysqli \
+					curl
+
+RUN mkdir -p /run/php
+
+COPY www.conf /etc/php/7.4/fpm/pool.d/www.conf
+
+CMD ["php-fpm7.4", "-F"]

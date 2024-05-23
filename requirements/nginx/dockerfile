@@ -1,0 +1,19 @@
+FROM debian:bullseye
+
+RUN apt update && apt install -y nginx openssl
+
+COPY default /etc/nginx/sites-available/default
+
+# Generate SSL certificates
+# First create folder (-p for creating parent directories)
+RUN mkdir -p /etc/nginx/ssl
+WORKDIR /etc/nginx/ssl/
+# Generate private key
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+	-keyout nginx.key \
+	-out nginx.crt \
+	-subj "/C=PT/ST=Lisboa/L=Lisboa/O=42Lisboa/CN=astein/"
+
+EXPOSE 443
+
+CMD ["nginx", "-g", "daemon off;"]
