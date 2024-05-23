@@ -1,3 +1,6 @@
+# Ignore the environment file
+*.env
+
 # Prerequisites
 *.d
 
