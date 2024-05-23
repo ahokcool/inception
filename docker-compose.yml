@@ -1,20 +1,65 @@
+version: "3.8"
+
 services:
   nginx:
     build: ./requirements/nginx/.
     container_name: nginx
+    depends_on:
+      - wp
+      - db
     ports:
       - "443:443"
     volumes:
-      - ./html:/var/www/html
-
+      - html:/var/www/html
+    networks:
+      - asteinsNetwork
+    env_file:
+      - astein.env
+    #restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      
   wp:
-    depends_on:
-      - nginx
     build: ./requirements/wp/.
     container_name: wp
+    depends_on:
+      - db
     volumes:
-      - ./html:/var/www/html
+      - html:/var/www/html
+    networks:
+      - asteinsNetwork
+    env_file:
+      - astein.env
+    #restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/wp-admin/install.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   db:
     build: ./requirements/db/.
     container_name: db
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - asteinsNetwork
+    env_file:
+      - astein.env
+    #restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  asteinsNetwork:
+    driver: bridge
+
+volumes:
+  db:
+  html:
