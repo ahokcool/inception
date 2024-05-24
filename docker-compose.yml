@@ -10,7 +10,7 @@ services:
     ports:
       - "443:443"
     volumes:
-      - html:/var/www/html
+      - ./data/html:/var/www/html
     networks:
       - asteinsNetwork
     env_file:
@@ -28,7 +28,7 @@ services:
     depends_on:
       - db
     volumes:
-      - html:/var/www/html
+      - ./data/html:/var/www/html
     networks:
       - asteinsNetwork
     env_file:
@@ -44,7 +44,7 @@ services:
     build: ./requirements/db/.
     container_name: db
     volumes:
-      - db:/var/lib/mysql
+      - ./data/db:/var/lib/mysql
     networks:
       - asteinsNetwork
     env_file:
@@ -58,8 +58,10 @@ services:
 
 networks:
   asteinsNetwork:
+    name: asteinsNetwork
     driver: bridge
 
-volumes:
-  db:
-  html:
+# Those are names of the volumes managed by docker
+#volumes:
+#  db:
+#  html:

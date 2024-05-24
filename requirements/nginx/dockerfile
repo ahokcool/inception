@@ -1,6 +1,6 @@
 FROM debian:bullseye
 
-RUN apt update && apt install -y nginx openssl
+RUN apt update && apt install -y nginx openssl iputils-ping
 
 COPY default /etc/nginx/sites-available/default
 
