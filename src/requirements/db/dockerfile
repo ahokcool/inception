@@ -8,4 +8,4 @@ COPY start_db.sh .
 
 RUN mkdir -p /run/mysqld && chmod +x start_db.sh
 
-CMD [ "./start_db.sh" ]
+ENTRYPOINT [ "./start_db.sh" ]

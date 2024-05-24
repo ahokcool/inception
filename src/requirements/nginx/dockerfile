@@ -2,6 +2,8 @@ FROM debian:bullseye
 
 RUN apt update && apt install -y nginx openssl iputils-ping
 
+RUN echo $HELLO
+
 COPY default /etc/nginx/sites-available/default
 
 # Generate SSL certificates
