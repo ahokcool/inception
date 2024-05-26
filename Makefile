@@ -9,6 +9,7 @@ RESET  		= "\033[0m"
 
 # Files
 COMPOSE_FILE = ./src/docker-compose.yml
+ENV_FILE = ./src/.env
 
 # Folders
 DATA_FOLDER = ./src/data
@@ -28,12 +29,12 @@ all: down build up
 # Building the project
 build:
 	@echo $(BLUE)"\n Building astein's inception..."$(RESET)
-	docker-compose -f $(COMPOSE_FILE) build
+	docker-compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) build
 
 # Running the project
 up:
 	@echo $(GREEN)"\n Running astein's inception..."$(RESET)
-	docker-compose -f $(COMPOSE_FILE) up -d
+	docker-compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) up -d
 
 # Stopping the project
 down:
@@ -64,13 +65,8 @@ network:
 
 # Purging all data after confirmation
 purge: down
-	@read -p "Are you sure you want to delete all data? [y/N] " confirm && \
-	if [ "$$confirm" = "y" ]; then \
-		echo $(RED)"\n Deleting all data..."$(RESET); \
-		sudo rm -rf $(DATA_FOLDER); \
-	else \
-		echo $(ORANGE)"\n Aborted purging of data."$(RESET); \
-	fi
+	echo $(RED)"\n Deleting all data..."$(RESET); \
+	sudo rm -rf $(DATA_FOLDER); \
 
 # Rebuilding the project
 re: purge build up

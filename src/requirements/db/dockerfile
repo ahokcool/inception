@@ -3,9 +3,12 @@ FROM debian:bullseye
 RUN apt update && apt install -y mariadb-server iputils-ping
 
 COPY 50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
-COPY init.sql /etc/mysql/init.sql
+#COPY init.sql /etc/mysql/init.sql
 COPY start_db.sh .
 
-RUN mkdir -p /run/mysqld && chmod +x start_db.sh
+RUN echo $MYSQL_DATABASE
+
+RUN mkdir -p /run/mysqld && chmod +x start_db.sh 
+#  && chmod +x /etc/mysql/init.sql
 
 ENTRYPOINT [ "./start_db.sh" ]

@@ -8,9 +8,14 @@ services:
       - ./data/db:/var/lib/mysql
     networks:
       - asteinsNetwork
-    env_file:
-      - .env
-    restart: unless-stopped
+    #env_file:
+    #  - .env
+    # restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: 'wordpress'
+      MYSQL_ROOT_PASSWORD: '123qqqQQQ321!'
+      MYSQL_USER: 'wp_user'
+      MYSQL_PASSWORD: '123'
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 30s
@@ -28,7 +33,7 @@ services:
       - asteinsNetwork
     env_file:
       - .env
-    restart: unless-stopped
+    # restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/wp-admin/install.php"]
       interval: 30s
@@ -49,7 +54,7 @@ services:
       - asteinsNetwork
     env_file:
       - .env
-    restart: unless-stopped
+    # restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 30s
