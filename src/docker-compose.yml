@@ -17,45 +17,45 @@ services:
       timeout: 10s
       retries: 3
 
-  wp:
-    container_name: wp
-    build: ./requirements/wp/.
-    depends_on:
-      - db
-    volumes:
-      - ./data/html:/var/www/html
-    networks:
-      - asteinsNetwork
-    env_file:
-      - .env
-    # restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/wp-admin/install.php"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      
-  nginx:
-    container_name: nginx
-    build: ./requirements/nginx/.
-    depends_on:
-      - wp
-      - db
-    ports:
-      - "443:443"
-    volumes:
-      - ./data/html:/var/www/html
-    networks:
-      - asteinsNetwork
-    env_file:
-      - .env
-    # restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      
+#  wp:
+#    container_name: wp
+#    build: ./requirements/wp/.
+#    depends_on:
+#      - db
+#    volumes:
+#      - ./data/html:/var/www/html
+#    networks:
+#      - asteinsNetwork
+#    env_file:
+#      - .env
+#    # restart: unless-stopped
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost/wp-admin/install.php"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      
+#  nginx:
+#    container_name: nginx
+#    build: ./requirements/nginx/.
+#    depends_on:
+#      - wp
+#      - db
+#    ports:
+#      - "443:443"
+#    volumes:
+#      - ./data/html:/var/www/html
+#    networks:
+#      - asteinsNetwork
+#    env_file:
+#      - .env
+#    # restart: unless-stopped
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      
 networks:
   asteinsNetwork:
     name: asteinsNetwork

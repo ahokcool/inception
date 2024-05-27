@@ -1,42 +1,37 @@
-#!/bin/sh
+#!/bin/bash
 
-# Check if the database directory exists; if not, configure MariaDB
-if [ ! -d "/var/lib/mysql/$MYSQL_DATABASE" ]; then
+# The script should stop on the first error
+set -e
 
-# Start MariaDB service
+# Change the bind adress
+sed -i 's/^bind-address/#bind-address/' /etc/mysql/mariadb.conf.d/50-server.cnf
+
+echo "Installing mariadb database..."
+mariadb-install-db
+#--skip-test-db --basedir=/usr --datadir=/var/lib/mysql
+echo "Starting MariaDB..."
 service mariadb start
-
-# Run mysql_secure_installation non-interactively
-mysql_secure_installation << END
-
-Y
-$MYSQL_ROOT_PASSWORD
-$MYSQL_ROOT_PASSWORD
-Y
-Y
-Y
-Y
-END
-echo "MariaDB configured"
-# Create database, user and grant privileges
-echo "Creating database $MYSQL_DATABASE..."
-    sleep 1
-    mysql -u root -e "CREATE DATABASE $MYSQL_DATABASE;"
-    mysql -u root -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
-    mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_USER'@'%';"
-    mysql -u root -e "FLUSH PRIVILEGES;"
-
-    # Change root password and shutdown MariaDB
-    mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';"
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "FLUSH PRIVILEGES;"
-    mysqladmin -u root -p$MYSQL_ROOT_PASSWORD shutdown
-
-else
-    sleep 1
-    echo "The database $MYSQL_DATABASE already exists."
-fi
-
-echo "Done"
-
-# Execute any additional commands passed to the shell script
-exec "$@"
+service mariadb status
+sleep 10
+##
+##echo "Change root password..."
+##mysqladmin -u root password "$MYSQL_ROOT_PASSWORD"
+##
+#echo "Create new user '$MYSQL_USER' and grant privileges..."
+mysql -u root -e "CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
+#mysql -u root -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%';"
+#mysql -u root -e "FLUSH PRIVILEGES;"
+##
+##echo "Create database..."
+##mysql -u root -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;"
+##
+##echo "Creating database..."
+##service mariadb status
+##
+#echo "Stopping MariaDB..."
+sleep 5
+service mariadb stop
+sleep 5
+#
+echo "Starting MariaDB in foreground..."
+exec mysqld_safe --skip-grant-tables
