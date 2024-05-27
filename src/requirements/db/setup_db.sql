@@ -8,8 +8,8 @@ ALTER USER 'root'@'%' IDENTIFIED BY 'root_password_placeholder';
 /* Create a db user for wordpress */
 CREATE USER 'user_placeholder'@'%' IDENTIFIED BY 'user_password_placeholder';
 
-/* Create the database for wordpress */
-CREATE DATABASE database_placeholder;
+	/* Create the database for wordpress */
+	CREATE DATABASE database_placeholder;
 
 /* Grant all privileges to the user */
 GRANT ALL PRIVILEGES ON *.* TO 'user_placeholder'@'%' WITH GRANT OPTION;

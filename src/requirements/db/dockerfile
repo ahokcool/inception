@@ -1,14 +1,39 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    dockerfile                                         :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: astein <astein@student.42lisboa.com>       +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/01/03 14:12:33 by abaiao-r          #+#    #+#              #
+#    Updated: 2024/05/27 20:07:24 by astein           ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+# Use Debian Bullseye as the base image
 FROM debian:bullseye
 
-RUN apt update && apt install -y mariadb-server iputils-ping
+# Update the package repository
+RUN apt-get update
 
-COPY 50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
-#COPY init.sql /etc/mysql/init.sql
-COPY start_db.sh .
+RUN apt-get update \
+    && apt-get install -y software-properties-common \
+    && apt-key adv --fetch-keys 'https://mariadb.org/mariadb_release_signing_key.asc' \
+    && add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://mirror.23media.com/mariadb/repo/10.5/ubuntu focal main' \
+    && apt-get update \
+    && apt-get install -y mariadb-server=1:10.5.24+maria~focal \
+    && rm -rf /var/lib/apt/lists/*
+# Copy the custom script for MariaDB configuration
+COPY setup_db.sh /home/mariadb.sh
 
-RUN echo $MYSQL_DATABASE
+# Make the script executable
+RUN chmod +x /home/mariadb.sh
 
-RUN mkdir -p /run/mysqld && chmod +x start_db.sh 
-#  && chmod +x /etc/mysql/init.sql
+# Expose port 3306 for MariaDB
+EXPOSE 3306
 
-ENTRYPOINT [ "./start_db.sh" ]
+# Set the entry point for the container
+ENTRYPOINT ["/home/mariadb.sh"]
+
+# Set the default command to start MariaDB in a safe mode with network access
+CMD ["mysqld_safe", "--bind-address=0.0.0.0"]
