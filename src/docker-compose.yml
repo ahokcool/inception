@@ -4,12 +4,14 @@ services:
   db:
     container_name: db
     build: ./requirements/db/.
-    volumes:
-      - ./data/db:/var/lib/mysql
+#    volumes:
+#      - db-volume:/var/lib/mysql
     networks:
       - asteinsNetwork
     env_file:
       - .env
+    ports:
+      - "3306:3306"
     # restart: unless-stopped
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
@@ -55,7 +57,8 @@ services:
 #      interval: 30s
 #      timeout: 10s
 #      retries: 3
-#      
+#
+
 networks:
   asteinsNetwork:
     name: asteinsNetwork
@@ -63,5 +66,10 @@ networks:
 
 # Those are names of the volumes managed by docker
 #volumes:
-#  db:
+#  db-volume:
+#    name: db-volume
+#    driver_opts:
+#      type: none
+#      device: ./data/db-volume/
+#      o: bind
 #  html:
