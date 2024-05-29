@@ -9,52 +9,51 @@ services:
     networks:
       - asteinsNetwork
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME       : $DB_NAME
+      DB_ROOT_PSWD  : $DB_ROOT_PSWD
+      DB_USER       : $DB_USER
+      DB_USER_PSWD  : $DB_USER_PSWD
     expose:
       - 3306
-    # restart: unless-stopped
-    #healthcheck:
-    #  test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-    #  interval: 30s
-    #  timeout: 10s
-    #  retries: 3
-
-#  wp:
-#    container_name: wp
-#    build: ./requirements/wp/.
-#    depends_on:
-#      - db
-#    volumes:
-#      - ./data/html:/var/www/html
-#    networks:
-#      - asteinsNetwork
-#    env_file:
-#      - .env
-#    # restart: unless-stopped
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost/wp-admin/install.php"]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
-#      
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  wp:
+    container_name: wp
+    build: ./requirements/wp/.
+    depends_on:
+      - db
+    volumes:
+      - wp-volume:/var/www/html
+    networks:
+      - asteinsNetwork
+    environment:
+      WP_DB_NAME          : $WP_DB_NAME
+      WP_DB_USER          : $WP_DB_USER
+      WP_DB_USER_PSWD     : $WP_DB_USER_PSWD
+      WP_DB_HOST          : db:3306
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/wp-admin/install.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3 
   nginx:
     container_name: nginx
     build: ./requirements/nginx/.
-    #depends_on:
-    #  - wp
-    #  - db
+    depends_on:
+      - db
+      - wp
     ports:
       - "443:443"
-    #volumes:
-    #  - ./data/html:/var/www/html
+    volumes:
+      - wp-volume:/var/www/html
     networks:
       - asteinsNetwork
-    env_file:
-      - .env
-    # restart: unless-stopped
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 30s
@@ -74,4 +73,9 @@ volumes:
       type: none
       device: ./data/db-volume/
       o: bind
-#  html:
+  wp-volume:
+    name: wp-volume
+    driver_opts:
+      type: none
+      device: ./data/wp-volume/
+      o: bind

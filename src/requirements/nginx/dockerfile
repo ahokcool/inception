@@ -1,9 +1,11 @@
 FROM debian:bullseye
 
-RUN apt update && apt install -y nginx openssl iputils-ping
+# Install nginx and openssl
+RUN apt update && \
+    apt install -y nginx openssl && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN echo $HELLO
-
+# Copy configuration files
 COPY default /etc/nginx/sites-available/default
 
 # Generate SSL certificates
@@ -18,4 +20,5 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 
 EXPOSE 443
 
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]

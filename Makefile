@@ -8,29 +8,32 @@ BLUE   		= "\033[0;34m"
 RESET  		= "\033[0m"
 
 # Files
-COMPOSE_FILE = ./src/docker-compose.yml
-ENV_FILE = ./src/.env
+COMPOSE_FILE 	= ./src/docker-compose.yml
+ENV_FILE 		= ./src/.env
 
 # Folders
-DATA_FOLDER = ./data
+DATA_FOLDER 	= ./data
 
 # Containers
-CONTAINERS = db wp nginx
+CONTAINERS 		= db wp nginx
+
+# VOLUMES
+VOLUMES 		= db-volume wp-volume
 
 # Network
-NETWORK_NAME = asteinsNetwork
+NETWORK_NAME 	= asteinsNetwork
 
 # Targets
-.PHONY: all build up down clean logs status purge re
+.PHONY: all build up down clean fclean re
 
 # Default target = restart
 all: down build up
 
 # Building the project
 build:
+	@echo $(BLUE)"\n Building astein's inception..."$(RESET)
 	mkdir -p $(DATA_FOLDER)/db-volume/
 	mkdir -p $(DATA_FOLDER)/wp-volume/
-	@echo $(BLUE)"\n Building astein's inception..."$(RESET)
 	docker-compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) build
 
 # Running the project
@@ -43,37 +46,25 @@ down:
 	@echo $(RED)"\n Stopping astein's inception..."$(RESET)
 	docker-compose -f $(COMPOSE_FILE) down
 	
-
 # Cleaning the project
 clean:
 	@echo $(RED)"\n Cleaning astein's inception..."$(RESET)
-	docker system prune -f
-	docker volume prune -f
+	@echo $(RED)"\n Deleting unused images..."$(RESET)
+	@docker system prune -f
+	@echo $(RED)"\n Deleting unused volumes..."$(RESET)
+	@docker volume prune -f
 
-fclean: clean
-	@echo $(RED)"\n Deleting all images..."$(RESET)
+# Full cleaning the project
+fclean: down clean
+	@echo "Are you sure you want to fully clean the project? [y/n]" && read ans && [ $${ans:-n} = y ]
+	@echo $(RED)"\n Deleting inception volumes..."$(RESET)
+	@docker volume rm $(VOLUMES) || true
+	@echo $(RED)"\n Deleting inception networks..."$(RESET)
+	@docker network rm $(NETWORK_NAME) || true
+	@echo $(RED)"\n Deleting inception containers..."$(RESET)
+	@docker rm $(CONTAINERS) || true
+	@echo $(RED)"\n Deleting data folder..."$(RESET)
 	@sudo rm -rf $(DATA_FOLDER)
 
-# Viewing the logs
-logs:
-	@echo $(BLUE)"\n Viewing logs for astein's inception..."$(RESET)
-	docker-compose -f $(COMPOSE_FILE) logs -f
-
-# Viewing the status
-status:
-	@echo $(BLUE)"\n Viewing status for astein's inception..."$(RESET)
-	docker-compose -f $(COMPOSE_FILE) ps
-
-# View the docker network
-network:
-	@echo $(BLUE)"\n Viewing network for astein's inception..."$(RESET)
-	docker network inspect $(NETWORK_NAME)
-
-# Purging all data after confirmation
-purge: down
-	echo $(RED)"\n Deleting all data..."$(RESET); \
-	docker rm $(CONTAINERS) || true #The || true is to ignore the error if the container is not found; \
-	sudo rm -rf $(DATA_FOLDER); \
-
 # Rebuilding the project
-re: purge build up
+re: fclean build up

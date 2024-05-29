@@ -18,9 +18,9 @@ server {
 		try_files $uri $uri/ =404;
 	}
 
-	# pass PHP scripts to FastCGI server
-	#location ~ \.php$ {
-	#	include snippets/fastcgi-php.conf;	
-	#	fastcgi_pass wp:9000;
-	#}
+	# Pass PHP scripts to FastCGI server
+	location ~ \.php$ {
+		include snippets/fastcgi-php.conf;	
+		fastcgi_pass wp:9000;
+	}
 }
