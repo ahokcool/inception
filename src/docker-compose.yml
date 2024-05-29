@@ -4,20 +4,23 @@ services:
   db:
     container_name: db
     build: ./requirements/db/.
-#    volumes:
-#      - db-volume:/var/lib/mysql
+    volumes:
+      - db-volume:/var/lib/mysql
     networks:
       - asteinsNetwork
-    env_file:
-      - .env
-    ports:
-      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    expose:
+      - 3306
     # restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    #healthcheck:
+    #  test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+    #  interval: 30s
+    #  timeout: 10s
+    #  retries: 3
 
 #  wp:
 #    container_name: wp
@@ -37,27 +40,26 @@ services:
 #      timeout: 10s
 #      retries: 3
 #      
-#  nginx:
-#    container_name: nginx
-#    build: ./requirements/nginx/.
-#    depends_on:
-#      - wp
-#      - db
-#    ports:
-#      - "443:443"
-#    volumes:
-#      - ./data/html:/var/www/html
-#    networks:
-#      - asteinsNetwork
-#    env_file:
-#      - .env
-#    # restart: unless-stopped
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost"]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
-#
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx/.
+    #depends_on:
+    #  - wp
+    #  - db
+    ports:
+      - "443:443"
+    #volumes:
+    #  - ./data/html:/var/www/html
+    networks:
+      - asteinsNetwork
+    env_file:
+      - .env
+    # restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   asteinsNetwork:
@@ -65,11 +67,11 @@ networks:
     driver: bridge
 
 # Those are names of the volumes managed by docker
-#volumes:
-#  db-volume:
-#    name: db-volume
-#    driver_opts:
-#      type: none
-#      device: ./data/db-volume/
-#      o: bind
+volumes:
+  db-volume:
+    name: db-volume
+    driver_opts:
+      type: none
+      device: ./data/db-volume/
+      o: bind
 #  html:

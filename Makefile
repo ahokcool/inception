@@ -12,7 +12,7 @@ COMPOSE_FILE = ./src/docker-compose.yml
 ENV_FILE = ./src/.env
 
 # Folders
-DATA_FOLDER = ./src/data
+DATA_FOLDER = ./data
 
 # Containers
 CONTAINERS = db wp nginx
@@ -28,6 +28,8 @@ all: down build up
 
 # Building the project
 build:
+	mkdir -p $(DATA_FOLDER)/db-volume/
+	mkdir -p $(DATA_FOLDER)/wp-volume/
 	@echo $(BLUE)"\n Building astein's inception..."$(RESET)
 	docker-compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) build
 
@@ -40,13 +42,17 @@ up:
 down:
 	@echo $(RED)"\n Stopping astein's inception..."$(RESET)
 	docker-compose -f $(COMPOSE_FILE) down
-	docker rm $(CONTAINERS) || true #The || true is to ignore the error if the container is not found
+	
 
 # Cleaning the project
 clean:
 	@echo $(RED)"\n Cleaning astein's inception..."$(RESET)
 	docker system prune -f
 	docker volume prune -f
+
+fclean: clean
+	@echo $(RED)"\n Deleting all images..."$(RESET)
+	@sudo rm -rf $(DATA_FOLDER)
 
 # Viewing the logs
 logs:
@@ -66,6 +72,7 @@ network:
 # Purging all data after confirmation
 purge: down
 	echo $(RED)"\n Deleting all data..."$(RESET); \
+	docker rm $(CONTAINERS) || true #The || true is to ignore the error if the container is not found; \
 	sudo rm -rf $(DATA_FOLDER); \
 
 # Rebuilding the project
