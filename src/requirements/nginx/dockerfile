@@ -1,12 +1,12 @@
 FROM debian:bullseye
 
-# Install nginx and openssl and curl (for healthcheck)
+# Install nginx and openssl
 RUN apt update && \
-    apt install -y nginx openssl curl && \
+    apt install -y nginx openssl && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy configuration files
-COPY default /etc/nginx/sites-available/default
+COPY ./conf/default /etc/nginx/sites-available/default
 
 # Generate SSL certificates
 # First create folder (-p for creating parent directories)

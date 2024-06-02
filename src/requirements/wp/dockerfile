@@ -12,10 +12,10 @@ RUN apt update && \
 	rm -rf /var/lib/apt/lists/*
 	
 RUN mkdir -p /run/php
-COPY www.conf /etc/php/7.4/fpm/pool.d/www.conf
+COPY ./conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
 # Copy the install script
-COPY install_wp.sh .
+COPY ./tools/install_wp.sh .
 RUN chmod +x install_wp.sh
 
 CMD ["./install_wp.sh"]

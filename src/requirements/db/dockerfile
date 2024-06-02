@@ -10,7 +10,7 @@ RUN mkdir -p /run/mysqld && \
 	chown -R mysql:mysql /run/mysqld
 
 # Copy the setup script and make it executable
-COPY setup_db.sh .
+COPY ./tools/setup_db.sh .
 RUN chmod +x setup_db.sh
 
 # Expose the port

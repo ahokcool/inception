@@ -12,7 +12,7 @@ COMPOSE_FILE 	= ./src/docker-compose.yml
 ENV_FILE 		= ./src/.env
 
 # Folders
-DATA_FOLDER 	= ./data
+DATA_FOLDER 	= /home/astein/data/
 
 # Containers
 CONTAINERS 		= db wp nginx

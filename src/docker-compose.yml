@@ -66,11 +66,11 @@ volumes:
     name: db-volume
     driver_opts:
       type: none
-      device: ./data/db-volume/
+      device: /home/astein/data/db-volume/
       o: bind
   wp-volume:
     name: wp-volume
     driver_opts:
       type: none
-      device: ./data/wp-volume/
+      device: /home/astein/data/wp-volume/
       o: bind
