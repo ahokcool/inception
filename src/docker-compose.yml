@@ -1,5 +1,6 @@
 version: "3.8"
 
+# Those are the services that will be created by docker-compose
 services:
   db:
     container_name: db
@@ -16,11 +17,6 @@ services:
     expose:
       - 3306
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
   wp:
     container_name: wp
     build: ./requirements/wp/.
@@ -35,12 +31,15 @@ services:
       WP_DB_USER          : $WP_DB_USER
       WP_DB_USER_PSWD     : $WP_DB_USER_PSWD
       WP_DB_HOST          : db:3306
+      WP_ADMIN            : $WP_ADMIN
+      WP_ADMIN_PSWD       : $WP_ADMIN_PSWD
+      WP_ADMIN_MAIL       : $WP_ADMIN_MAIL
+      WP_USER             : $WP_USER
+      WP_USER_PSWD        : $WP_USER_PSWD
+      WP_USER_MAIL        : $WP_USER_MAIL
+    expose:
+      - 9000
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/wp-admin/install.php"]
-      interval: 30s
-      timeout: 10s
-      retries: 3 
   nginx:
     container_name: nginx
     build: ./requirements/nginx/.
@@ -54,12 +53,8 @@ services:
     networks:
       - asteinsNetwork
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
+# Those are names of the networks managed by docker
 networks:
   asteinsNetwork:
     name: asteinsNetwork
